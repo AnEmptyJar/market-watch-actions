@@ -2,5 +2,10 @@
 logs/
 state/
 config/config.json
+config/*.BAK*
+scripts/network_watch*
+scripts/server_watch.py
+scripts/tg_fast_poller.py
+README_PRODUCTION.md
 *.pyc
 __pycache__/
