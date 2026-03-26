@@ -1,0 +1,74 @@
+name: Market Push V2
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '3 * * * *'
+      timezone: 'Asia/Shanghai'
+    - cron: '13 * * * *'
+      timezone: 'Asia/Shanghai'
+    - cron: '23 * * * *'
+      timezone: 'Asia/Shanghai'
+    - cron: '33 * * * *'
+      timezone: 'Asia/Shanghai'
+    - cron: '43 * * * *'
+      timezone: 'Asia/Shanghai'
+    - cron: '53 * * * *'
+      timezone: 'Asia/Shanghai'
+
+jobs:
+  run-market-watch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Prepare runtime directories
+        run: |
+          mkdir -p logs state config
+
+      - name: Create runtime config
+        run: |
+          cat > config/config.json <<'JSON'
+          {
+            "telegram": {
+              "cooldown_sec": 600
+            },
+            "http": {
+              "timeout_sec": 8,
+              "retries": 2
+            },
+            "perf": {
+              "concurrent_workers": 6
+            },
+            "fx_cache": {
+              "ttl_sec": 43200
+            },
+            "alerts": {
+              "major_pct": 3.0,
+              "cooldown_sec": 900
+            },
+            "schedule": {
+              "day_start": "06:00:00",
+              "day_end": "22:00:00"
+            }
+          }
+          JSON
+
+      - name: Run market watch once
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: python scripts/market_watch_once.py
+
+      - name: Show log tail
+        if: always()
+        run: |
+          echo "===== market_watch.log ====="
+          tail -n 50 logs/market_watch.log || true
