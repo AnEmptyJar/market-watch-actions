@@ -3,7 +3,7 @@ name: Market Hourly Push
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '3,13,23,33,43,53 * * * *'
 
 jobs:
   run-market-watch:
