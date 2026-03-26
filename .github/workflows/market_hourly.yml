@@ -1,4 +1,4 @@
-name: Market Hourly Push
+name: Market Push 10min
 
 on:
   workflow_dispatch:
